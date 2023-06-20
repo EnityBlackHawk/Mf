@@ -24,7 +24,7 @@ import java.util.Objects;
 @EnableMongoRepositories
 public class TesteMfApplication {
 
-	private static final boolean GENERATE = false;
+	private static final boolean GENERATE = true;
 	private static final boolean RUN_TEST = false;
 	private static final boolean MAKE_DAG = true;
 
@@ -32,7 +32,7 @@ public class TesteMfApplication {
 		var context = SpringApplication.run(TesteMfApplication.class, args);
 
 		if(MAKE_DAG) {
-			var dag = new Graphs("Bank5", "E:\\Projeto", 1);
+			var dag = new Graphs("Bank5", "E:\\Projeto", 2);
 			dag.GenerateAndSave();
 		}
 
@@ -53,53 +53,50 @@ public class TesteMfApplication {
 		}
 
 		if(RUN_TEST) {
-			ModelMapper mm = new ModelMapper();
-			var repos = context.getBean(Repositories.class);
-			repos.mgAccontRepo.deleteAll();
-			repos.mgExchangeRepo.deleteAll();
-
-			for(var a : repos.getClientRepo().findAll())
-				repos.mgAccontRepo.insert(
-						mm.map(a, Accont.class)
-				);
-
-			var exs = repos.exchangeRepo.findAll();
-			var accs = repos.mgAccontRepo.findAll();
-
-			for(var ex : exs)
-			{
-				var m_ex = mm.map(ex, Exchange.class);
-
-				for (var a : accs)
-				{
-					if(Objects.equals(ex.getAccontDest().getId(), a.getId()))
-					{
-						m_ex.setAccontDest(a);
-					}
-					else if(Objects.equals(ex.getAccontSource().getId(), a.getId()))
-					{
-						m_ex.setAccontSource(a);
-					}
-				}
-				repos.mgExchangeRepo.insert(m_ex);
-			}
-
-
-			for(var a : repos.mgAccontRepo.findAll())
-			{
-				System.out.println(a.getClient().getName());
-			}
-			System.out.println();
-			for(var e : repos.mgExchangeRepo.findAll())
-			{
-				System.out.println(e.getAccontDest().getClient().getName());
-			}
-
-
+//			ModelMapper mm = new ModelMapper();
+//			var repos = context.getBean(Repositories.class);
+//			repos.mgAccontRepo.deleteAll();
+//			repos.mgExchangeRepo.deleteAll();
+//
+//			for(var a : repos.getClientRepo().findAll())
+//				repos.mgAccontRepo.insert(
+//						mm.map(a, Accont.class)
+//				);
+//
+//			var exs = repos.exchangeRepo.findAll();
+//			var accs = repos.mgAccontRepo.findAll();
+//
+//			for(var ex : exs)
+//			{
+//				var m_ex = mm.map(ex, Exchange.class);
+//
+//				for (var a : accs)
+//				{
+//					if(Objects.equals(ex.getAccontDest().getId(), a.getId()))
+//					{
+//						m_ex.setAccontDest(a);
+//					}
+//					else if(Objects.equals(ex.getAccontSource().getId(), a.getId()))
+//					{
+//						m_ex.setAccontSource(a);
+//					}
+//				}
+//				repos.mgExchangeRepo.insert(m_ex);
+//			}
+//
+//
+//			for(var a : repos.mgAccontRepo.findAll())
+//			{
+//				System.out.println(a.getClient().getName());
+//			}
+//			System.out.println();
+//			for(var e : repos.mgExchangeRepo.findAll())
+//			{
+//				System.out.println(e.getAccontDest().getClient().getName());
+//			}
 
 
-
-
+			context.close();
 		}
 
 	}

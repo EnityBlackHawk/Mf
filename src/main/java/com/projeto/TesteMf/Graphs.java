@@ -185,31 +185,32 @@ public class Graphs {
         clientTable.getTypeFields().add( new TableColumnVertex("address",   "text", false, false));
         clientTable.getTypeFields().add( new TableColumnVertex("phone",     "text", false, false));
 
-        entityGraph.addVertex(exchangeGraph);
+
         entityGraph.addVertex(accontTable);
         entityGraph.addVertex(accontTableDest);
         entityGraph.addVertex(clientTable);
+        entityGraph.addVertex(exchangeGraph);
 
         var rel1 = new RelationshipEdge(
                 RelationshipEdgeType.EMBED_ONE_TO_MANY,
-                "accontSource",
                 "client",
+                "accontSource",
                 "id",
                 "id_client"
         );
-        rel1.setOneSideEntityId(accontTable.getId());
-        rel1.setManySideEntityId(clientTable.getId());
+        rel1.setOneSideEntityId(clientTable.getId());
+        rel1.setManySideEntityId(accontTable.getId());
         entityGraph.addEdge(clientTable, accontTable, rel1);
 
         var rel2 = new RelationshipEdge(
                 RelationshipEdgeType.EMBED_ONE_TO_MANY,
-                "accontDest",
                 "client",
+                "accontDest",
                 "id",
                 "id_client"
         );
-        rel2.setOneSideEntityId(accontTableDest.getId());
-        rel2.setManySideEntityId(clientTable.getId());
+        rel2.setOneSideEntityId(clientTable.getId());
+        rel2.setManySideEntityId(accontTableDest.getId());
         entityGraph.addEdge(clientTable, accontTableDest, rel2);
 
         RelationshipEdge rel3 = new RelationshipEdge(
@@ -219,8 +220,8 @@ public class Graphs {
                 "id",
                 "id_conta_source"
         );
-        rel2.setOneSideEntityId(accontTable.getId());
-        rel2.setManySideEntityId(exchangeGraph.getId());
+        rel3.setOneSideEntityId(accontTable.getId());
+        rel3.setManySideEntityId(exchangeGraph.getId());
         entityGraph.addEdge(accontTable, exchangeGraph, rel3);
 
         RelationshipEdge rel4 = new RelationshipEdge(
@@ -231,8 +232,8 @@ public class Graphs {
                 "id_conta_dest"
         );
 
-        rel3.setOneSideEntityId(accontTableDest.getId());
-        rel3.setManySideEntityId(exchangeGraph.getId());
+        rel4.setOneSideEntityId(accontTableDest.getId());
+        rel4.setManySideEntityId(exchangeGraph.getId());
         entityGraph.addEdge(accontTableDest, exchangeGraph, rel4);
 
         this.schema.getEntities().add(entityGraph);
@@ -290,6 +291,18 @@ public class Graphs {
         this.schema.getEntities().add(entityGraph2);
         this.schema.getRefEntities().add(rel);
 
+        RelationshipEdge rel1 = new RelationshipEdge(
+                RelationshipEdgeType.REF_ONE_TO_MANY,
+                "client",
+                "accontDest",
+                "id",
+                "id_client"
+        );
+        rel1.setOneSideEntityId(clientTable.getId());
+        rel1.setManySideEntityId(accontTableDest.getId());
+
+        this.schema.getRefEntities().add(rel1);
+
 
 
         DirectedAcyclicGraph<TableVertex, RelationshipEdge> entityGraph3 = new DirectedAcyclicGraph<>(RelationshipEdge.class);
@@ -306,108 +319,30 @@ public class Graphs {
 
         RelationshipEdge rel2 = new RelationshipEdge(
                 RelationshipEdgeType.REF_ONE_TO_MANY,
-                "accont",
+                "accontSource",
                 "exchange",
                 "id",
                 "id_conta_source"
         );
-        rel2.setOneSideEntityId(1);
-        rel2.setManySideEntityId(3);
+        rel2.setOneSideEntityId(accontTable.getId());
+        rel2.setManySideEntityId(exchangeGraph.getId());
 
         RelationshipEdge rel3 = new RelationshipEdge(
                 RelationshipEdgeType.REF_ONE_TO_MANY,
-                "accont",
+                "accontDest",
                 "exchange",
                 "id",
                 "id_conta_dest"
         );
 
-        rel3.setOneSideEntityId(1);
-        rel3.setManySideEntityId(3);
+        rel3.setOneSideEntityId(accontTableDest.getId());
+        rel3.setManySideEntityId(exchangeGraph.getId());
 
         this.schema.getRefEntities().add(rel2);
         this.schema.getRefEntities().add(rel3);
 
     }
 
-
-    @Deprecated
-    public void CreateAccont()
-    {
-        DirectedAcyclicGraph<TableVertex, RelationshipEdge> entityGraph = new DirectedAcyclicGraph<>(RelationshipEdge.class);
-
-        TableVertex accontTable = new TableVertex("accont", "accont", "id");
-        accontTable.setId(idCount++); // 1
-        accontTable.getTypeFields().add(new TableColumnVertex("id", "int4", true, false));
-        accontTable.getTypeFields().add(new TableColumnVertex("id_client", "int4", false, true));
-        accontTable.getTypeFields().add(new TableColumnVertex("value", "numeric", false, false));
-
-
-        TableVertex clientTable = new TableVertex("client", "client", "id");
-        clientTable.setId(idCount++); // 2
-        clientTable.getTypeFields().add( new TableColumnVertex("id", "int4", true, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("cpf", "text", false, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("name", "text", false, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("address", "text", false, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("phone", "text", false, false));
-
-        RelationshipEdge rel = new RelationshipEdge(
-            RelationshipEdgeType.REF_ONE_TO_MANY,
-                "client",
-                "accont",
-                "id",
-                "id_client"
-        );
-        rel.setOneSideEntityId(2);
-        rel.setManySideEntityId(1);
-
-        addFieldsFromColumnField(accontTable);
-        addFieldsFromColumnField(clientTable);
-
-        this.schema.getRefEntities().add(rel);
-        this.schema.getEntities().add(entityGraph);
-    }
-
-    @Deprecated
-    private void CreateExchange()
-    {
-        DirectedAcyclicGraph<TableVertex, RelationshipEdge> entityGraph = new DirectedAcyclicGraph<>(RelationshipEdge.class);
-        TableVertex exchangeGraph = new TableVertex("exchange", "exchange", "id");
-        exchangeGraph.setId(idCount++); // 3
-        exchangeGraph.getTypeFields().add(new TableColumnVertex("id", "int4", true, false));
-        exchangeGraph.getTypeFields().add(new TableColumnVertex("id_conta_source", "int4", false, true));
-        exchangeGraph.getTypeFields().add(new TableColumnVertex("id_conta_dest", "int4", false, true));
-        exchangeGraph.getTypeFields().add(new TableColumnVertex("value", "numeric", false, false));
-
-        entityGraph.addVertex(exchangeGraph);
-        addFieldsFromColumnField(exchangeGraph);
-
-        this.schema.getEntities().add(entityGraph);
-
-        RelationshipEdge rel = new RelationshipEdge(
-                RelationshipEdgeType.REF_ONE_TO_MANY,
-                "accont",
-                "exchange",
-                "id",
-                "id_conta_source"
-        );
-        rel.setOneSideEntityId(1);
-        rel.setManySideEntityId(3);
-
-        RelationshipEdge rel2 = new RelationshipEdge(
-                RelationshipEdgeType.REF_ONE_TO_MANY,
-                "accont",
-                "exchange",
-                "id",
-                "id_conta_dest"
-        );
-
-        rel2.setOneSideEntityId(1);
-        rel2.setManySideEntityId(3);
-
-        this.schema.getRefEntities().add(rel);
-        this.schema.getRefEntities().add(rel2);
-    }
 
     private void addFieldsFromColumnField(TableVertex tableVertex){
         for (TableColumnVertex columnVertex : tableVertex.getTypeFields()){

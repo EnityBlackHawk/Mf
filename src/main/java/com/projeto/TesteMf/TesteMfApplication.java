@@ -24,9 +24,10 @@ import java.util.Objects;
 @EnableMongoRepositories
 public class TesteMfApplication {
 
+	private static final boolean MAKE_DAG = true;
 	private static final boolean GENERATE = true;
 	private static final boolean RUN_TEST = false;
-	private static final boolean MAKE_DAG = true;
+
 
 	public static void main(String[] args) {
 		var context = SpringApplication.run(TesteMfApplication.class, args);

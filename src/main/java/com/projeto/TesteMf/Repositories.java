@@ -1,6 +1,7 @@
 package com.projeto.TesteMf;
 
 
+import com.projeto.TesteMf.Model.Exchange;
 import com.projeto.TesteMf.Repo.AccontRepo;
 import com.projeto.TesteMf.Repo.ClientRepo;
 import com.projeto.TesteMf.Repo.ExchangeRepo;
@@ -11,13 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Controller
 public class Repositories {
 
     @Autowired
     public AccontRepo accontRepo;
     @Autowired
-    private ClientRepo clientRepo;
+    public ClientRepo clientRepo;
 
     @Autowired
     public ExchangeRepo exchangeRepo;
@@ -30,7 +33,12 @@ public class Repositories {
     @Autowired
     public MgExchangeRepo mgExchangeRepo;
 
-    public ClientRepo getClientRepo() {
-        return clientRepo;
+
+
+    public List<Exchange> getExchangesByAccont(int accontId)
+    {
+        return exchangeRepo.findAll().stream().filter((e) ->
+                (e.getAccontDest().getId() == accontId) || (e.getAccontSource().getId() == accontId)).toList();
     }
+
 }

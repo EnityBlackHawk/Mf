@@ -7,8 +7,8 @@ public class Accont {
     @Id
     private java.lang.Integer id;
     private java.lang.Double value;
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "id_client")
+    @ManyToOne
+    @JoinColumn(name = "id_client")
     private Client client;
 
     public  Accont() {}

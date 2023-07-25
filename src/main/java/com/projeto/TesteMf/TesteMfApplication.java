@@ -34,7 +34,7 @@ public class TesteMfApplication {
 		var context = SpringApplication.run(TesteMfApplication.class, args);
 
 		if(MAKE_DAG) {
-			var dag = new Graphs("Bank5", "E:\\Projeto", 1);
+			var dag = new Graphs("Bank5", "E:\\Projeto", 3);
 			dag.GenerateAndSave();
 		}
 
@@ -60,7 +60,7 @@ public class TesteMfApplication {
 			var tr = context.getBean(TestRoutines.class);
 			//tr.RemoveAll();
 			//tr.InsertRandonValues();
-			tr.Routine1();
+			tr.Routine3();
 		}
 
 		if(RUN_TEST) {

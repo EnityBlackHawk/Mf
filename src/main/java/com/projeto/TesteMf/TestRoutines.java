@@ -7,7 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -83,11 +85,10 @@ public class TestRoutines {
 
     public void Routine1()
     {
-        repositories.mgAccontRepo.deleteAll();
-
+        RemoveAll();
 
         var listOfAcconts = repositories.accontRepo.findAll();
-        var listOfClients = repositories.clientRepo.findAll();
+        var listOfExchanges = repositories.exchangeRepo.findAll();
 
         ModelMapper mm = new ModelMapper();
 
@@ -97,24 +98,75 @@ public class TestRoutines {
             var am = new com.projeto.TesteMf.auto.accont.Accont();
             am.setId(a.getId());
 
-            var c = mm.map(a.getClient(), com.projeto.TesteMf.auto.accont.Client.class);
 
-            am.setClient(
-                    c
-            );
+            var lm = Arrays.stream(am.getClass().getDeclaredMethods()).filter(m -> m.getName() == "setClient").toList();
+
+            if(lm.isEmpty()) throw new RuntimeException("Could not find method");
+            var returnType = lm.get(0).getReturnType();
+            var c = mm.map(a.getClient(), returnType);
+
+            try {
+                lm.get(0).invoke(am, c);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+
             am.setValue(a.getValue());
 
-            var l = repositories.getExchangesByAccont(a.getId());
-
-            List<com.projeto.TesteMf.auto.exchange.Exchange> listOfExchanges =
-                    l.stream().map((exchange ->
-                            mm.map(exchange, com.projeto.TesteMf.auto.exchange.Exchange.class))).toList();
-
-            am.setExchange(listOfExchanges);
+            List<com.projeto.TesteMf.auto.exchange.Exchange> e = new ArrayList<>();
 
             repositories.mgAccontRepo.insert(am);
-
         }
+
+        listOfExchanges.forEach(e -> {
+            var em = mm.map(e, com.projeto.TesteMf.auto.exchange.Exchange.class);
+            em.setId_conta_source(e.getAccontSource().getId());
+            em.setId_conta_dest(e.getAccontDest().getId());
+            repositories.mgExchangeRepo.insert(em);
+        });
+    }
+
+    public void Routine2()
+    {
+        RemoveAll();
+
+        var listOfExchanges = repositories.exchangeRepo.findAll();
+
+        ModelMapper mm = new ModelMapper();
+
+        listOfExchanges.forEach( e -> {
+            var em = mm.map(e, com.projeto.TesteMf.auto.exchange.Exchange.class);
+            repositories.mgExchangeRepo.insert(em);
+        });
+    }
+
+
+    public void Routine3()
+    {
+        RemoveAll();
+
+        var listOfAcconts = repositories.accontRepo.findAll();
+        var listOfExchanges = repositories.exchangeRepo.findAll();
+        var listOfClients = repositories.clientRepo.findAll();
+
+        ModelMapper mm = new ModelMapper();
+
+        listOfClients.forEach( c -> {
+            repositories.mgClientRepo.insert(mm.map(c, com.projeto.TesteMf.auto.client.Client.class));
+        });
+
+        listOfAcconts.forEach( a -> {
+            var am = mm.map(a, com.projeto.TesteMf.auto.accont.Accont.class);
+            am.setId_client(a.getClient().getId());
+            repositories.mgAccontRepo.insert(am);
+        });
+
+        listOfExchanges.forEach(e -> {
+            var em = mm.map(e, com.projeto.TesteMf.auto.exchange.Exchange.class);
+            em.setId_conta_source(e.getAccontSource().getId());
+            em.setId_conta_dest(e.getAccontDest().getId());
+            repositories.mgExchangeRepo.insert(em);
+        });
 
     }
 

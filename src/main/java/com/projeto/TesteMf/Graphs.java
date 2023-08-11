@@ -10,6 +10,8 @@ import dag.persistence.NoSQLSchemaJson;
 import jakarta.persistence.Table;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 
+import java.util.ArrayList;
+
 public class Graphs {
 
     private NoSQLSchema schema;
@@ -154,12 +156,11 @@ public class Graphs {
         this.schema.getRefEntities().add(rel3);
     }
 
-    public void CreateStruct2()
-    {
+    public void CreateStruct2() {
         var entityGraph = new DirectedAcyclicGraph<TableVertex, RelationshipEdge>(RelationshipEdge.class);
 
         TableVertex exchangeGraph = new TableVertex("exchange", "exchange", "id");
-        exchangeGraph.setId(idCount++); // 3
+        exchangeGraph.setId(idCount++);
         exchangeGraph.getTypeFields().add(new TableColumnVertex("id", "int4", true, false));
         exchangeGraph.getTypeFields().add(new TableColumnVertex("id_conta_source", "int4", false, true));
         exchangeGraph.getTypeFields().add(new TableColumnVertex("id_conta_dest", "int4", false, true));
@@ -167,9 +168,9 @@ public class Graphs {
 
         TableVertex accontTable = new TableVertex("accontSource", "accont", "id");
         accontTable.setId(idCount++);
-        accontTable.getTypeFields().add(new TableColumnVertex("id",         "int4",     true,   false));
-        accontTable.getTypeFields().add(new TableColumnVertex("id_client",  "int4",     false,  true));
-        accontTable.getTypeFields().add(new TableColumnVertex("value",      "numeric",  false,  false));
+        accontTable.getTypeFields().add(new TableColumnVertex("id", "int4", true, false));
+        accontTable.getTypeFields().add(new TableColumnVertex("id_client", "int4", false, true));
+        accontTable.getTypeFields().add(new TableColumnVertex("value", "numeric", false, false));
 
         TableVertex accontTableDest = new TableVertex("accontDest", "accont", "id");
         accontTableDest.setId(idCount++);
@@ -179,17 +180,23 @@ public class Graphs {
 
         TableVertex clientTable = new TableVertex("client", "client", "id");
         clientTable.setId(idCount++);
-        clientTable.getTypeFields().add( new TableColumnVertex("id",        "int4", true, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("cpf",       "text", false, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("name",      "text", false, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("address",   "text", false, false));
-        clientTable.getTypeFields().add( new TableColumnVertex("phone",     "text", false, false));
+        clientTable.getTypeFields().add(new TableColumnVertex("id", "int4", true, false));
+        clientTable.getTypeFields().add(new TableColumnVertex("cpf", "text", false, false));
+        clientTable.getTypeFields().add(new TableColumnVertex("name", "text", false, false));
+        clientTable.getTypeFields().add(new TableColumnVertex("address", "text", false, false));
+        clientTable.getTypeFields().add(new TableColumnVertex("phone", "text", false, false));
 
+        var listOfTableVertex = new ArrayList<TableVertex>();
+        listOfTableVertex.add(exchangeGraph);
+        listOfTableVertex.add(accontTable);
+        listOfTableVertex.add(accontTableDest);
+        listOfTableVertex.add(clientTable);
 
-        entityGraph.addVertex(accontTable);
-        entityGraph.addVertex(accontTableDest);
-        entityGraph.addVertex(clientTable);
-        entityGraph.addVertex(exchangeGraph);
+        for (var t : listOfTableVertex) {
+            if (!entityGraph.addVertex(t))
+                throw new RuntimeException("Erro na adicao do vertex: " + t.getName());
+        }
+
 
         var rel1 = new RelationshipEdge(
                 RelationshipEdgeType.EMBED_ONE_TO_MANY,
@@ -200,7 +207,9 @@ public class Graphs {
         );
         rel1.setOneSideEntityId(clientTable.getId());
         rel1.setManySideEntityId(accontTable.getId());
-        entityGraph.addEdge(clientTable, accontTable, rel1);
+
+        assert entityGraph.addEdge(clientTable, accontTable, rel1) : "Erro na adicao da rel1";
+
 
         var rel2 = new RelationshipEdge(
                 RelationshipEdgeType.EMBED_ONE_TO_MANY,
@@ -211,7 +220,8 @@ public class Graphs {
         );
         rel2.setOneSideEntityId(clientTable.getId());
         rel2.setManySideEntityId(accontTableDest.getId());
-        entityGraph.addEdge(clientTable, accontTableDest, rel2);
+
+        assert entityGraph.addEdge(clientTable, accontTableDest, rel2) : "Erro na adicao da rel2";
 
         RelationshipEdge rel3 = new RelationshipEdge(
                 RelationshipEdgeType.EMBED_ONE_TO_MANY,
@@ -222,7 +232,8 @@ public class Graphs {
         );
         rel3.setOneSideEntityId(accontTable.getId());
         rel3.setManySideEntityId(exchangeGraph.getId());
-        entityGraph.addEdge(accontTable, exchangeGraph, rel3);
+
+        assert entityGraph.addEdge(accontTable, exchangeGraph, rel3) : "Erro na adicao da rel3";
 
         RelationshipEdge rel4 = new RelationshipEdge(
                 RelationshipEdgeType.EMBED_ONE_TO_MANY,
@@ -234,7 +245,7 @@ public class Graphs {
 
         rel4.setOneSideEntityId(accontTableDest.getId());
         rel4.setManySideEntityId(exchangeGraph.getId());
-        entityGraph.addEdge(accontTableDest, exchangeGraph, rel4);
+        assert entityGraph.addEdge(accontTableDest, exchangeGraph, rel4) : "Erro na adicao da rel4";
 
         this.schema.getEntities().add(entityGraph);
     }

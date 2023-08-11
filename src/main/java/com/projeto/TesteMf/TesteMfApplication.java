@@ -24,8 +24,8 @@ import java.util.Objects;
 @EnableMongoRepositories
 public class TesteMfApplication {
 
-	private static final boolean MAKE_DAG = false;
-	private static final boolean GENERATE = false;
+	private static final boolean MAKE_DAG = true;
+	private static final boolean GENERATE = true;
 	private static final boolean RUN_TEST = false;
 	private static final boolean RUN_ROUTINE = true;
 
@@ -34,7 +34,7 @@ public class TesteMfApplication {
 		var context = SpringApplication.run(TesteMfApplication.class, args);
 
 		if(MAKE_DAG) {
-			var dag = new Graphs("Bank5", "E:\\Projeto", 3);
+			var dag = new Graphs("Bank5", "E:\\Projeto", 1);
 			dag.GenerateAndSave();
 		}
 
@@ -58,9 +58,7 @@ public class TesteMfApplication {
 		if(RUN_ROUTINE)
 		{
 			var tr = context.getBean(TestRoutines.class);
-			//tr.RemoveAll();
-			//tr.InsertRandonValues();
-			tr.Routine3();
+			tr.Routine1();
 		}
 
 		if(RUN_TEST) {

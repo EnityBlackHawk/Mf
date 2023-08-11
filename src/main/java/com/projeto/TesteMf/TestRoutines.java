@@ -86,6 +86,7 @@ public class TestRoutines {
     public void Routine1()
     {
         RemoveAll();
+        InsertRandonValues();
 
         var listOfAcconts = repositories.accontRepo.findAll();
         var listOfExchanges = repositories.exchangeRepo.findAll();
@@ -99,11 +100,12 @@ public class TestRoutines {
             am.setId(a.getId());
 
 
-            var lm = Arrays.stream(am.getClass().getDeclaredMethods()).filter(m -> m.getName() == "setClient").toList();
+            var lm = Arrays.stream(am.getClass().getDeclaredMethods()).filter(m -> m.getName().equals("setClient")).toList();
 
             if(lm.isEmpty()) throw new RuntimeException("Could not find method");
-            var returnType = lm.get(0).getReturnType();
-            var c = mm.map(a.getClient(), returnType);
+            var paramType = Arrays.stream(lm.get(0).getParameterTypes()).findFirst().orElse(null);
+            if(paramType == null) throw new RuntimeException("Param was null");
+            var c = mm.map(a.getClient(), paramType);
 
             try {
                 lm.get(0).invoke(am, c);
@@ -124,6 +126,10 @@ public class TestRoutines {
             em.setId_conta_dest(e.getAccontDest().getId());
             repositories.mgExchangeRepo.insert(em);
         });
+
+        System.out.print("Insersão concluida");
+        System.out.print("Iniciando teste de integridade");
+
     }
 
     public void Routine2()

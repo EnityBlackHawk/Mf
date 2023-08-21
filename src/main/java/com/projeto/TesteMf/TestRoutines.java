@@ -189,4 +189,13 @@ public class TestRoutines {
         return Math.abs(finalDate.getTime() - initialDate.getTime());
     }
 
+    private void Verify()
+    {
+        var listOfAcconts_Mongo = repositories.mgAccontRepo.findAll();
+        var listOfAcconts_SQL = repositories.accontRepo.findAll();
+
+
+
+    }
+
 }

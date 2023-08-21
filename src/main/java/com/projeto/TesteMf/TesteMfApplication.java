@@ -69,9 +69,23 @@ public class TesteMfApplication {
 		}
 
 		if(RUN_TEST) {
-			ThreadTest.Companion.run();
-			ThreadTest.Companion.run();
-			ThreadTest.Companion.run();
+			Accont a = new Accont();
+			a.setId(1);
+			a.set_id("1");
+			a.setClient(null);
+			a.setExchange(null);
+			a.setId_client(1);
+			a.setValue(15.0);
+			Accont b = new Accont();
+			b.setId(1);
+			b.set_id("1");
+			b.setClient(null);
+			b.setExchange(null);
+			b.setId_client(1);
+			b.setValue(15.0);
+
+			var rest =  ObjectEqualsKt.hasSameValues(a, b);
+			System.out.println(rest);
 		}
 
 	}

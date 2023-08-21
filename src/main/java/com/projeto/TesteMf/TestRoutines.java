@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class TestRoutines {
@@ -85,6 +84,9 @@ public class TestRoutines {
 
     public void Routine1()
     {
+        var d = new Date();
+        System.out.println("Rotina 1 iniciada em: " + new SimpleDateFormat().format(d));
+
         RemoveAll();
         InsertRandonValues();
 
@@ -118,6 +120,7 @@ public class TestRoutines {
             List<com.projeto.TesteMf.auto.exchange.Exchange> e = new ArrayList<>();
 
             repositories.mgAccontRepo.insert(am);
+
         }
 
         listOfExchanges.forEach(e -> {
@@ -126,9 +129,8 @@ public class TestRoutines {
             em.setId_conta_dest(e.getAccontDest().getId());
             repositories.mgExchangeRepo.insert(em);
         });
-
-        System.out.print("Insersão concluida");
-        System.out.print("Iniciando teste de integridade");
+        var f = new Date();
+        System.out.print("Rotina 1 concluida em: " + GetDeltaTimeMilis(d, f) + "ms");
 
     }
 
@@ -149,7 +151,10 @@ public class TestRoutines {
 
     public void Routine3()
     {
+        var d = new Date();
+        System.out.println("Iniciando Rotina 3: " + new SimpleDateFormat().format(d));
         RemoveAll();
+        InsertRandonValues();
 
         var listOfAcconts = repositories.accontRepo.findAll();
         var listOfExchanges = repositories.exchangeRepo.findAll();
@@ -173,7 +178,15 @@ public class TestRoutines {
             em.setId_conta_dest(e.getAccontDest().getId());
             repositories.mgExchangeRepo.insert(em);
         });
+        var f = new Date();
 
+        System.out.println("Rotina 3 concluida em: " + GetDeltaTimeMilis(d, f) + "ms");
+    }
+
+
+    public static long GetDeltaTimeMilis(Date initialDate, Date finalDate)
+    {
+        return Math.abs(finalDate.getTime() - initialDate.getTime());
     }
 
 }

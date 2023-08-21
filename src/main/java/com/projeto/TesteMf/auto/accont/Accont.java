@@ -2,7 +2,9 @@ package com.projeto.TesteMf.auto.accont;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.projeto.TesteMf.auto.client.Client;
 import com.projeto.TesteMf.auto.exchange.Exchange;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
@@ -11,9 +13,10 @@ public class Accont{
 	private java.lang.Integer id;
 	private java.lang.Integer id_client;
 	private java.lang.Double value;
-	private Client client;
 	@Id
 	private String _id;
+	@DocumentReference(lookup = "{ 'id' : ?#{#self.id_client} }")
+	private Client client;
 	@ReadOnlyProperty
 	@DocumentReference(lookup = "{ 'id_conta_dest' : ?#{#self.id} }")
 	private java.util.List<Exchange> exchange;
@@ -35,17 +38,17 @@ public class Accont{
 	public void setValue(java.lang.Double value) {
 		this.value = value;
 	}
-	public Client getClient(){
-		return client;
-	}
-	public void setClient(Client value) {
-		this.client = value;
-	}
 	public String get_id(){
 		return _id;
 	}
 	public void set_id(String value) {
 		this._id = value;
+	}
+	public Client getClient(){
+		return client;
+	}
+	public void setClient(Client value) {
+		this.client = value;
 	}
 	public java.util.List<Exchange> getExchange(){
 		return exchange;

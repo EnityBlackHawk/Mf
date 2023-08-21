@@ -24,17 +24,19 @@ import java.util.Objects;
 @EnableMongoRepositories
 public class TesteMfApplication {
 
-	private static final boolean MAKE_DAG = true;
-	private static final boolean GENERATE = true;
-	private static final boolean RUN_TEST = false;
-	private static final boolean RUN_ROUTINE = true;
+	private static final boolean MAKE_DAG = false;
+	private static final boolean GENERATE = false;
+	private static final boolean RUN_TEST = true;
+	private static final boolean RUN_ROUTINE = false;
+
+	private static final int PROFILE_NUMBER = 1;
 
 
 	public static void main(String[] args) {
 		var context = SpringApplication.run(TesteMfApplication.class, args);
 
 		if(MAKE_DAG) {
-			var dag = new Graphs("Bank5", "E:\\Projeto", 1);
+			var dag = new Graphs("Bank5", "E:\\Projeto", PROFILE_NUMBER);
 			dag.GenerateAndSave();
 		}
 
@@ -58,55 +60,18 @@ public class TesteMfApplication {
 		if(RUN_ROUTINE)
 		{
 			var tr = context.getBean(TestRoutines.class);
-			tr.Routine1();
+			switch (PROFILE_NUMBER)
+			{
+				case 1 -> tr.Routine1();
+				case 2 -> tr.Routine2();
+				case 3 -> tr.Routine3();
+			}
 		}
 
 		if(RUN_TEST) {
-
-//			ModelMapper mm = new ModelMapper();
-//			var repos = context.getBean(Repositories.class);
-//			repos.mgAccontRepo.deleteAll();
-//			repos.mgExchangeRepo.deleteAll();
-//
-//			for(var a : repos.getClientRepo().findAll())
-//				repos.mgAccontRepo.insert(
-//						mm.map(a, Accont.class)
-//				);
-//
-//			var exs = repos.exchangeRepo.findAll();
-//			var accs = repos.mgAccontRepo.findAll();
-//
-//			for(var ex : exs)
-//			{
-//				var m_ex = mm.map(ex, Exchange.class);
-//
-//				for (var a : accs)
-//				{
-//					if(Objects.equals(ex.getAccontDest().getId(), a.getId()))
-//					{
-//						m_ex.setAccontDest(a);
-//					}
-//					else if(Objects.equals(ex.getAccontSource().getId(), a.getId()))
-//					{
-//						m_ex.setAccontSource(a);
-//					}
-//				}
-//				repos.mgExchangeRepo.insert(m_ex);
-//			}
-//
-//
-//			for(var a : repos.mgAccontRepo.findAll())
-//			{
-//				System.out.println(a.getClient().getName());
-//			}
-//			System.out.println();
-//			for(var e : repos.mgExchangeRepo.findAll())
-//			{
-//				System.out.println(e.getAccontDest().getClient().getName());
-//			}
-
-
-			context.close();
+			ThreadTest.Companion.run();
+			ThreadTest.Companion.run();
+			ThreadTest.Companion.run();
 		}
 
 	}

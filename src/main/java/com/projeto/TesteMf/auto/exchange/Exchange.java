@@ -2,10 +2,6 @@ package com.projeto.TesteMf.auto.exchange;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import com.projeto.TesteMf.auto.accont.Accont;
-import com.projeto.TesteMf.auto.accont.Accont;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 @Document(collection = "Exchange")
 public class Exchange{
@@ -15,10 +11,6 @@ public class Exchange{
 	private java.lang.Double value;
 	@Id
 	private String _id;
-	@DocumentReference(lookup = "{ 'id' : ?#{#self.id_conta_source} }")
-	private Accont accontSource;
-	@DocumentReference(lookup = "{ 'id' : ?#{#self.id_conta_dest} }")
-	private Accont accontDest;
 	public java.lang.Integer getId(){
 		return id;
 	}
@@ -48,17 +40,5 @@ public class Exchange{
 	}
 	public void set_id(String value) {
 		this._id = value;
-	}
-	public Accont getAccontSource(){
-		return accontSource;
-	}
-	public void setAccontSource(Accont value) {
-		this.accontSource = value;
-	}
-	public Accont getAccontDest(){
-		return accontDest;
-	}
-	public void setAccontDest(Accont value) {
-		this.accontDest = value;
 	}
 }
